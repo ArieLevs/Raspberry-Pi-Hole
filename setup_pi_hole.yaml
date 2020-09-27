@@ -1,0 +1,8 @@
+
+- name: Setup Raspberry PI Hole
+  hosts: all
+  become: true
+
+  roles:
+    - docker_install_role
+    - setup_raspberry_pi_hole
