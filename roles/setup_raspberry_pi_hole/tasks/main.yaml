@@ -1,0 +1,53 @@
+---
+- name: Pi Hole | RedHat/CentOS | Open Ports
+  firewalld:
+    zone: public
+    port: "{{ item.port }}"
+    permanent: "{{ item.permanent }}"
+    state: enabled
+  with_items:
+    - { port: '80/tcp', permanent: true }
+    - { port: '443/tcp', permanent: true }
+    - { port: '53/tcp', permanent: true }
+    - { port: '53/udp', permanent: true }
+    - { port: '67/udp', permanent: true }
+  when: ansible_os_family == 'RedHat'
+
+- name: Pi Hole | RedHat/CentOS | Reload firewalld
+  systemd:
+    name: firewalld
+    state: reloaded
+  when: ansible_os_family == 'RedHat'
+
+- name: Pi Hole | Install pip
+  package:
+    name: ['python3-pip']
+    state: latest
+
+- name: Pi Hole | Install PIP docker module
+  pip:
+    name: ['docker-py']
+    state: latest
+
+- name: Pi Hole | Creates directories
+  file:
+    path: "{{ item.path }}"
+    state: directory
+  with_items:
+    - { path: '/etc/pihole'}
+
+- name: Pi Hole | Run pi-hole container
+  docker_container:
+    name: 'pihole'
+    image: 'pihole/pihole:latest'
+    state: 'started'
+    network_mode: host
+    env:
+      TZ: "Asia/Jerusalem"
+      ServerIP: "0.0.0.0"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "53:53"
+      - "67:67"
+    restart_policy: always
