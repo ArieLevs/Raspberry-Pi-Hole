@@ -14,24 +14,18 @@ Ansible installation of pi-hole
     ./Install\ Certificates.command
     ``` 
 
-
-install dependencies 
+install dependencies:
 ```shell script
 ansible-galaxy install -r requirements.yaml
 ```
-
-```shell script
-ansible-playbook \
-  --ask-become-pass --become --user lev \
-  -i "10.99.0.83," \
-  setup_pi_hole.yaml \
-  --key-file ~/.ssh/id_rsa
-```
-
-
+execute playbook:
+* Make sure to use python 3 interpreter with raspberry
 ```shell script
 ansible-playbook \
   --ask-become-pass --become --user pi --ask-pass \
-  -i "10.99.0.61," \
-  setup_pi_hole.yaml
+  -i "10.0.0.10," \
+  -e TZ="UTC" \
+  -e WEBPASSWORD="12345678" \
+  setup_pi_hole.yaml \
+  -e 'ansible_python_interpreter=/usr/bin/python3'
 ```
