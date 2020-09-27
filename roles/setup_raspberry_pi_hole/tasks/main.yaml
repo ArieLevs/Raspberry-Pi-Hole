@@ -21,7 +21,7 @@
 
 - name: Pi Hole | Install pip
   package:
-    name: ['python3-pip']
+    name: ['python3-setuptools', 'python3-pip']
     state: latest
 
 - name: Pi Hole | Install PIP docker module
@@ -33,6 +33,7 @@
   file:
     path: "{{ item.path }}"
     state: directory
+    mode: '0644'
   with_items:
     - { path: '/etc/pihole'}
 
@@ -43,7 +44,8 @@
     state: 'started'
     network_mode: host
     env:
-      TZ: "Asia/Jerusalem"
+      TZ: "{{ TZ | default('UTC') }}"
+      WEBPASSWORD: "{{ WEBPASSWORD | default('admin') }}"
       ServerIP: "0.0.0.0"
     ports:
       - "80:80"
