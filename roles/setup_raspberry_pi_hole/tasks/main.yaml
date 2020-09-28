@@ -37,6 +37,12 @@
   with_items:
     - { path: '/etc/pihole'}
 
+- name: Pi Hole | Create pihole.log
+  file:
+    path: /var/log/pihole.log
+    state: touch
+    mode: '0644'
+
 - name: Pi Hole | Run pi-hole container
   docker_container:
     name: 'pihole'
@@ -52,4 +58,7 @@
       - "443:443"
       - "53:53"
       - "67:67"
+    volumes:
+      - "/etc/pihole:/etc/pihole:z"
+      - "/var/log/pihole.log:/var/log/pihole.log:z"
     restart_policy: always
